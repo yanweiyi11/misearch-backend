@@ -10,7 +10,7 @@ import java.util.List;
  * 聚合搜索
  */
 @Data
-public class SearchVo implements Serializable {
+public class SearchVO implements Serializable {
 
     private static final long serialVersionUID = 2993490323532911908L;
 
@@ -19,5 +19,7 @@ public class SearchVo implements Serializable {
     private List<PostVO> postList;
 
     private List<Picture> pictureList;
+
+    private List<Object> dataList;
 
 }

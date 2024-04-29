@@ -18,6 +18,7 @@ import com.yanweiyi.misearchbackend.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
@@ -269,9 +270,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public Page<UserVO> listUserVoByPage(UserQueryRequest userQueryRequest) {
-        int current = userQueryRequest.getCurrent();
-        int size = userQueryRequest.getPageSize();
+    public Page<UserVO> listUserVoByPage(@NotNull UserQueryRequest userQueryRequest) {
+        long current = userQueryRequest.getCurrent();
+        long size = userQueryRequest.getPageSize();
         Page<User> userPage = this.page(new Page<>(current, size), this.getQueryWrapper(userQueryRequest));
         Page<UserVO> userVOPage = new Page<>(current, size, userPage.getTotal());
         List<UserVO> userVO = this.getUserVO(userPage.getRecords());
