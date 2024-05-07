@@ -2,6 +2,7 @@ package com.yanweiyi.misearchbackend.datasource;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yanweiyi.misearchbackend.model.dto.post.PostQueryRequest;
+import com.yanweiyi.misearchbackend.model.entity.Post;
 import com.yanweiyi.misearchbackend.model.vo.PostVO;
 import com.yanweiyi.misearchbackend.service.PostService;
 import lombok.extern.slf4j.Slf4j;
@@ -29,8 +30,12 @@ public class PostDataSource implements DataSource<PostVO> {
         postQueryRequest.setCurrent(pageNum);
         postQueryRequest.setPageSize(pageSize);
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = requestAttributes.getRequest();
-        return postService.listPostVOByPage(postQueryRequest, request);
+        HttpServletRequest request = null;
+        if (requestAttributes != null) {
+            request = requestAttributes.getRequest();
+        }
+        Page<Post> postPage = postService.searchFromEs(postQueryRequest);
+        return postService.getPostVOPage(postPage, request);
     }
 }
 

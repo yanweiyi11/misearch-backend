@@ -4,19 +4,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yanweiyi.misearchbackend.common.ErrorCode;
 import com.yanweiyi.misearchbackend.datasource.*;
 import com.yanweiyi.misearchbackend.exception.BusinessException;
-import com.yanweiyi.misearchbackend.exception.ThrowUtils;
 import com.yanweiyi.misearchbackend.model.dto.search.SearchRequest;
 import com.yanweiyi.misearchbackend.model.entity.Picture;
 import com.yanweiyi.misearchbackend.model.enums.SearchEnum;
 import com.yanweiyi.misearchbackend.model.vo.PostVO;
 import com.yanweiyi.misearchbackend.model.vo.SearchVO;
 import com.yanweiyi.misearchbackend.model.vo.UserVO;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * 搜索门面
@@ -42,21 +39,14 @@ public class SearchFacade {
         long current = searchRequest.getCurrent();
         long size = searchRequest.getPageSize();
 
-        ThrowUtils.throwIf(StringUtils.isBlank(type), ErrorCode.PARAMS_ERROR);
+        // ThrowUtils.throwIf(StringUtils.isBlank(type), ErrorCode.PARAMS_ERROR);
         SearchEnum searchEnum = SearchEnum.getEnumByValue(type);
-
         SearchVO searchVO = new SearchVO();
         if (searchEnum == null) {
-            CompletableFuture<Page<PostVO>> postTask = CompletableFuture.supplyAsync(() -> postDataSource.doSearch(searchText, current, size));
-            CompletableFuture<Page<UserVO>> userTask = CompletableFuture.supplyAsync(() -> userDataSource.doSearch(searchText, current, size));
-            CompletableFuture<Page<Picture>> pictureTask = CompletableFuture.supplyAsync(() -> pictureDataSource.doSearch(searchText, current, size));
-
-            CompletableFuture.allOf(userTask, postTask, pictureTask).join();
-
+            Page<PostVO> postPage = postDataSource.doSearch(searchText, current, size);
+            Page<UserVO> userPage = userDataSource.doSearch(searchText, current, size);
+            Page<Picture> picturePage = pictureDataSource.doSearch(searchText, current, size);
             try {
-                Page<PostVO> postPage = postTask.get();
-                Page<UserVO> userPage = userTask.get();
-                Page<Picture> picturePage = pictureTask.get();
                 searchVO.setPostList(postPage.getRecords());
                 searchVO.setPictureList(picturePage.getRecords());
                 searchVO.setUserList(userPage.getRecords());
