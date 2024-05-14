@@ -1,7 +1,8 @@
 package com.yanweiyi.misearchbackend.model.dto.user;
 
-import java.io.Serializable;
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * 用户注册请求体
@@ -13,7 +14,10 @@ public class UserRegisterRequest implements Serializable {
 
     private String userAccount;
 
+    private String userName;
+
     private String userPassword;
 
     private String checkPassword;
+
 }

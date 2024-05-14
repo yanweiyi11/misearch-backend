@@ -1,6 +1,7 @@
 package com.yanweiyi.misearchbackend.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -42,10 +43,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     public static final String SALT = "yanweiyi";
 
+    /**
+     * 默认头像列表
+     */
+    private static final List<String> DEFALUT_USER_AVATAR_LIST = new ArrayList<>();
+
+    static {
+        // 初始化默认头像列表
+        DEFALUT_USER_AVATAR_LIST.add("https://nnnu.oss-cn-guangzhou.aliyuncs.com/note/ikun1.png");
+        DEFALUT_USER_AVATAR_LIST.add("https://nnnu.oss-cn-guangzhou.aliyuncs.com/note/ikun2.png");
+        DEFALUT_USER_AVATAR_LIST.add("https://nnnu.oss-cn-guangzhou.aliyuncs.com/note/ikun3.png");
+    }
+
     @Override
-    public long userRegister(String userAccount, String userPassword, String checkPassword) {
+    public long userRegister(String userAccount, String userPassword, String checkPassword, String userName) {
         // 1. 校验
-        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
+        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword, userName)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
         if (userAccount.length() < 4) {
@@ -72,6 +85,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             User user = new User();
             user.setUserAccount(userAccount);
             user.setUserPassword(encryptPassword);
+            user.setUserName(userName);
+            // 随机生成默认头像
+            int randomNumber = RandomUtil.randomInt(0, 3);
+            String avatarUrl = DEFALUT_USER_AVATAR_LIST.get(randomNumber);
+            user.setUserAvatar(avatarUrl);
+            // 4. 保存用户
             boolean saveResult = this.save(user);
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");
