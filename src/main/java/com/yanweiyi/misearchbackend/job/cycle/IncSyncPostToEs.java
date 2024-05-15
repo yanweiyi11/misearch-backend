@@ -1,12 +1,14 @@
 package com.yanweiyi.misearchbackend.job.cycle;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import com.yanweiyi.misearchbackend.esdao.PostEsDao;
 import com.yanweiyi.misearchbackend.mapper.PostMapper;
 import com.yanweiyi.misearchbackend.model.dto.post.PostEsDTO;
 import com.yanweiyi.misearchbackend.model.entity.Post;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -14,10 +16,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 增量同步帖子到 es
+ * 增量同步文章到 es
  */
-// todo 取消注释开启任务
-// @Component
+@Component
 @Slf4j
 public class IncSyncPostToEs {
 
@@ -28,13 +29,13 @@ public class IncSyncPostToEs {
     private PostEsDao postEsDao;
 
     /**
-     * 每分钟执行一次
+     * 每六凌晨 3 点执行一次
      */
-    @Scheduled(fixedRate = 60 * 1000)
+    @Scheduled(cron = "0 0 3 ? * SAT")
     public void run() {
-        // 查询近 5 分钟内的数据
-        Date fiveMinutesAgoDate = new Date(new Date().getTime() - 5 * 60 * 1000L);
-        List<Post> postList = postMapper.listPostWithDelete(fiveMinutesAgoDate);
+        // 查询近 三周 内的数据
+        Date threeWeeksAgoDate = DateUtil.offsetWeek(new Date(), -3);
+        List<Post> postList = postMapper.listPostWithDelete(threeWeeksAgoDate);
         if (CollUtil.isEmpty(postList)) {
             log.info("no inc post");
             return;

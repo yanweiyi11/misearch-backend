@@ -34,7 +34,7 @@ public class PictureServiceImpl implements PictureService {
     @Override
     public Page<Picture> searchPicture(String searchText, long pageNum, long pageSize) {
         List<Picture> picturesList = new ArrayList<>();
-        long cursor = pageNum * pageSize + 5;
+        long cursor = pageNum * pageSize + 10;
 
         // 如果 searchText 为空，则从默认搜索关键词中随机选择一个
         if (StringUtils.isBlank(searchText)) {
